@@ -1,0 +1,46 @@
+QWidget{
+    font-family: "Fira Code";
+}
+QLineEdit{
+    height: 24px;
+    border-radius: 6px;
+    font-size: 26px;
+    background-color: #92cbca;
+    padding: 6px 10px;
+    color: black;
+}
+
+QLabel{
+    outline: none;
+    font-size: 20px;
+    margin-left: 1px;
+}
+QLabel#register-banner {
+    background-color: transparent;
+    qproperty-alignment: AlignCenter;
+    font-size: 80px;
+    /* border: 2px solid red; */
+    margin-bottom: 200px;
+}
+QLabel#info-label{
+    font-size: 16px;
+    color: red;
+    margin: 0;
+    padding: 0;
+    text-decoration: solid underline red 4px;
+}
+QPushButton{
+    background-color: #10cb8b;
+    font-size: 22px;
+    border-radius: 4px;
+}
+QPushButton:hover{
+    font-style: italic;
+}
+QPushButton:pressed{
+    background-color: #0db0cb;
+}
+
+QPushButton{
+    margin-top: 20px;
+}

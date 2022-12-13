@@ -1,21 +1,17 @@
 from PyQt6.QtWidgets import (
-    QWidget, QLabel, QLineEdit, QCheckBox, QVBoxLayout, QHBoxLayout, QPushButton
+    QWidget, QLabel, QLineEdit, QCheckBox, QVBoxLayout, QHBoxLayout, QPushButton, QGraphicsDropShadowEffect
 )
 from PyQt6.QtCore import Qt, QRegularExpression
-from PyQt6.QtGui import QRegularExpressionValidator
+from PyQt6.QtGui import QRegularExpressionValidator, QColor
 
 
-Qss = '''\
-QLabel{
-outline: none;
-}
-'''
 
 
 class LoginWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.setStyleSheet(Qss)
+        with open('static/Qss/login.css') as f:
+            self.setStyleSheet(f.read())
         self.__layout = QVBoxLayout()
         self.__layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setLayout(self.__layout)
@@ -25,14 +21,24 @@ class LoginWidget(QWidget):
                 r'\d{6}'
             )
         )
-        self.ascii_regex = QRegularExpression("[\x00-\x7f]+")
+        self.ascii_regex = QRegularExpression("[\x00-\x7f]{8,18}")
         self.ascii_regex_validator = QRegularExpressionValidator(self.ascii_regex)
         self.setUI()
 
     def setUI(self):
+        # welcome login banner
+        self.loginBanner = QLabel("Welcome to login")
+        bannerGraphics = QGraphicsDropShadowEffect()
+        bannerGraphics.setColor(QColor("#FC0"))
+        bannerGraphics.setOffset(1, 0)
+        bannerGraphics.setBlurRadius(10)
+        self.loginBanner.setGraphicsEffect(bannerGraphics)
+        self.__layout.addWidget(self.loginBanner)
+        self.loginBanner.setObjectName("login-banner")
         # username input
         self.userLabel = QLabel("Student Number")
         self.userLine = QLineEdit(self)
+        self.userLine.setPlaceholderText("Six digits")
         self.userLine.setValidator(self.stuNumberValidator)
         # set validator
         self.__layout.addWidget(self.userLabel)
@@ -40,6 +46,7 @@ class LoginWidget(QWidget):
         # password input
         self.passwdLabel = QLabel("Password")
         self.passwdLine = QLineEdit(self)
+        self.passwdLine.setPlaceholderText("8 to 18 digits")
         # set validator
         self.passwdLine.setValidator(self.ascii_regex_validator)
         self.passwdLine.setEchoMode(QLineEdit.EchoMode.Password)

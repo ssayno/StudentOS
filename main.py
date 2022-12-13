@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget, QMessageBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget, QMessageBox, QLabel
 from src.Login.login import LoginWidget
 from src.Register.register import RegisterWidget
 from src.MainUI.mainui import MainUi
@@ -9,7 +9,9 @@ import pymysql
 class StudentSystem(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.resize(600, 800)
+        with open('static/Qss/main.css', 'r', encoding='U8') as f:
+            self.setStyleSheet(f.read())
+        self.resize(800, 1000)
         self.cw = QStackedWidget(self)
         self.setCentralWidget(self.cw)
         """
@@ -42,22 +44,27 @@ class StudentSystem(QMainWindow):
         )
         self.cw.addWidget(self.loginWidget)
 
-    def switchToRegister(self):
-        if hasattr(self, 'registerWidget'):
-            print("ok")
-            self.cw.setCurrentWidget(self.registerWidget)
-
     def useRegisterWidget(self):
         self.registerWidget = RegisterWidget(self)
         self.registerWidget.registerButton.clicked.connect(
             self.register
         )
-        print("Register")
+        self.registerWidget.loginButton.clicked.connect(
+            self.switchToLogin
+        )
         self.cw.addWidget(self.registerWidget)
 
     def useMainUI(self):
         self.mainui = MainUi(self)
         self.cw.addWidget(self.mainui)
+
+    def switchToRegister(self):
+        if hasattr(self, 'registerWidget'):
+            self.cw.setCurrentWidget(self.registerWidget)
+
+    def switchToLogin(self):
+        if hasattr(self, 'loginWidget'):
+            self.cw.setCurrentWidget(self.loginWidget)
 
     def loginVerify(self):
         stuNumber = self.loginWidget.userLine.text()
@@ -92,14 +99,20 @@ class StudentSystem(QMainWindow):
             self.loginWidget.rememberButton.setChecked(False)
 
     def register(self):
-        sn = self.registerWidget.userLine.text()
-        pw = self.registerWidget.passwdLine.text()
-        rn = self.registerWidget.realNameLine.text()
-        pn = self.registerWidget.phoneNumberLine.text()
-        print(sn, pw, rn, pn)
-        print(type(sn), type(pw), type(rn), type(pn))
-        # may be something need to move
-        self.__register(sn, pw, rn, pn)
+        info_labels = self.registerWidget.findChildren(QLabel, "info-label")
+        if all(
+            [not info_label.text() for info_label in info_labels]
+        ):
+            sn = self.registerWidget.userLine.text()
+            pw = self.registerWidget.passwdLine.text()
+            rn = self.registerWidget.realNameLine.text()
+            pn = self.registerWidget.phoneNumberLine.text()
+            if sn == "":
+                QMessageBox.warning(self, "Invalid register informations", "Here something is error, please check it.")
+                return
+            self.__register(sn, pw, rn, pn)
+        else:
+            QMessageBox.warning(self, "Invalid register informations", "Here something is error, please check it.")
 
     def __register(self, stuNumber, password, realName, phoneNumber):
         try:
