@@ -4,12 +4,16 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, QRegularExpression
 from PyQt6.QtGui import QRegularExpressionValidator, QColor, QPalette, QValidator
-
+import os
+from Student.settings import QSS
 
 class RegisterWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        with open('static/Qss/register.css') as f:
+        registerQss = os.path.join(
+            QSS, 'register.css'
+        )
+        with open(registerQss) as f:
             self.setStyleSheet(f.read())
         self.__layout = QVBoxLayout()
         self.__layout.setContentsMargins(4, 0, 4, 0)

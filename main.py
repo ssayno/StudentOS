@@ -4,12 +4,16 @@ from src.Login.login import LoginWidget
 from src.Register.register import RegisterWidget
 from src.MainUI.mainui import MainUi
 import pymysql
-
+import os
+from Student.settings import QSS
 
 class StudentSystem(QMainWindow):
     def __init__(self):
         super().__init__()
-        with open('static/Qss/main.css', 'r', encoding='U8') as f:
+        mainQss = os.path.join(
+            QSS, 'main.css'
+        )
+        with open(mainQss, 'r', encoding='U8') as f:
             self.setStyleSheet(f.read())
         self.resize(800, 1000)
         self.cw = QStackedWidget(self)
@@ -18,10 +22,10 @@ class StudentSystem(QMainWindow):
         use pymysql module to connect mysql
         """
         self.sql_connect = pymysql.connect(host='localhost',
-                             user='root',
-                             password='271xufei.GMAIL',
-                             database='studentOS',
-                             charset='utf8mb4')
+                                           user='root',
+                                           password='271xufei.GMAIL',
+                                           database='studentOS',
+                                           charset='utf8mb4')
         self.sql_cursor = self.sql_connect.cursor()
         # add login UI
         self.useLoginWidget()
@@ -33,7 +37,7 @@ class StudentSystem(QMainWindow):
     def useLoginWidget(self):
         self.loginWidget = LoginWidget(self)
         self.loginWidget.automaticButton.stateChanged.connect(
-            self.automaticloginWithRemember
+            self.automaticLoginWithRemember
         )
         self.loginWidget.loginButton.clicked.connect(
             self.loginVerify
@@ -67,7 +71,7 @@ class StudentSystem(QMainWindow):
             self.cw.setCurrentWidget(self.loginWidget)
 
     def loginVerify(self):
-        stuNumber = self.loginWidget.userLine.text()
+        stuNumber = self.loginWidget.userLine.lineEdit().text()
         password = self.loginWidget.passwdLine.text()
         try:
             self.sql_cursor.execute(
@@ -78,6 +82,14 @@ class StudentSystem(QMainWindow):
             if result is None:
                 print("User not exist")
             else:
+                try:
+                    self.sql_cursor.execute(
+                        'insert into loginUsers values (%s)', stuNumber
+                    )
+                    self.sql_connect.commit()
+                except:
+                    print("When insert into login error")
+                    self.sql_connect.rollback()
                 self.mainui.setUI(
                     result[0], stuNumber, result[1]
                 )
@@ -87,7 +99,7 @@ class StudentSystem(QMainWindow):
             QMessageBox.warning(self, "Sql error", f'{e}')
             self.sql_connect.rollback()
 
-    def automaticloginWithRemember(self, state):
+    def automaticLoginWithRemember(self, state):
         # print(state, type(state))
         """
         :param state: 0 unchecked, 1 triple state, 2 checked.
@@ -101,7 +113,7 @@ class StudentSystem(QMainWindow):
     def register(self):
         info_labels = self.registerWidget.findChildren(QLabel, "info-label")
         if all(
-            [not info_label.text() for info_label in info_labels]
+                [not info_label.text() for info_label in info_labels]
         ):
             sn = self.registerWidget.userLine.text()
             pw = self.registerWidget.passwdLine.text()

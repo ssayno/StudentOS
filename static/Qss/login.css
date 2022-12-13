@@ -1,7 +1,8 @@
-QWidget{
+QWidget {
     font-family: "Fira Code";
 }
-QLineEdit{
+
+QLineEdit, QComboBox{
     height: 30px;
     border-radius: 6px;
     font-size: 26px;
@@ -10,29 +11,66 @@ QLineEdit{
     color: black;
 }
 
-QLabel{
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 20px;
+    border-left-width: px;
+    border-left-color: darkgray;
+    border-left-style: solid;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    background-color: darkcyan;
+}
+QComboBox::down-arrow {
+    image: url("static/Images/expand-arrow.png");
+}
+
+
+QComboBox QAbstractItemView{
+    outline: none;
+    border: none;
+    width: 100%;
+    margin: 20px;
+}
+
+QComboBox QAbstractItemView::item {
+    background-color: #10cb8b;
+    color: black;
+}
+QComboBox QAbstractItemView::item:selected {
+    background-color: white;
+}
+
+QLabel {
     outline: none;
     font-size: 20px;
     margin-left: 1px;
 }
-QLabel#login-banner{
+
+QLabel#login-banner {
     background-color: transparent;
     qproperty-alignment: AlignCenter;
     font-size: 60px;
     /* border: 2px solid red; */
     margin-bottom: 200px;
 }
-QPushButton{
+
+QPushButton {
     background-color: #10cb8b;
     font-size: 22px;
     border-radius: 4px;
 }
-QPushButton:hover{
+
+QPushButton:hover {
     font-style: italic;
 }
-QPushButton:pressed{
+
+QPushButton:pressed {
     background-color: #0db0cb;
 }
-QCheckBox{
+
+QCheckBox {
     font-size: 16px;
 }

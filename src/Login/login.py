@@ -1,16 +1,21 @@
+import os
 from PyQt6.QtWidgets import (
-    QWidget, QLabel, QLineEdit, QCheckBox, QVBoxLayout, QHBoxLayout, QPushButton, QGraphicsDropShadowEffect
+    QWidget, QLabel, QLineEdit, QCheckBox, QVBoxLayout, QHBoxLayout,
+    QPushButton, QGraphicsDropShadowEffect, QComboBox
 )
 from PyQt6.QtCore import Qt, QRegularExpression
 from PyQt6.QtGui import QRegularExpressionValidator, QColor
-
-
+import pymysql
+from Student.settings import QSS
 
 
 class LoginWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        with open('static/Qss/login.css') as f:
+        loginQss = os.path.join(
+            QSS, 'login.css'
+        )
+        with open(loginQss) as f:
             self.setStyleSheet(f.read())
         self.__layout = QVBoxLayout()
         self.__layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -37,9 +42,12 @@ class LoginWidget(QWidget):
         self.loginBanner.setObjectName("login-banner")
         # username input
         self.userLabel = QLabel("Student Number")
-        self.userLine = QLineEdit(self)
-        self.userLine.setPlaceholderText("Six digits")
-        self.userLine.setValidator(self.stuNumberValidator)
+        self.userLine = QComboBox()
+        self.addLoginedUsers()
+        self.userLine.setEditable(True)
+        # self.userLine = QLineEdit(self)
+        # self.userLine.setPlaceholderText("Six digits")
+        # self.userLine.setValidator(self.stuNumberValidator)
         # set validator
         self.__layout.addWidget(self.userLabel)
         self.__layout.addWidget(self.userLine)
@@ -73,3 +81,20 @@ class LoginWidget(QWidget):
         self.lg_layout.addWidget(self.registerButton, 2)
         self.__layout.addLayout(self.lg_layout)
 
+    def addLoginedUsers(self):
+        with pymysql.connect(host='localhost',
+                                           user='root',
+                                           password='271xufei.GMAIL',
+                                           database='studentOS',
+                                           charset='utf8mb4') as connect:
+            cursor = connect.cursor()
+            try:
+                cursor.execute(
+                    'select stuNumber from loginUsers'
+                )
+                results = cursor.fetchall()
+                for result in results:
+                    self.userLine.addItem(result[0])
+            except:
+                print("Showing error when add login user")
+            cursor.close()
